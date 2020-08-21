@@ -1,5 +1,4 @@
 #!/bin/python3
-
 import os
 from pathlib import Path
 import tarfile as tar
@@ -7,7 +6,7 @@ import tarfile as tar
 home = str(Path.home())
 
 
-def compress_save_data(apps, dir_to_compress, output_folder):
+def compress_data(apps, dir_to_compress, output_folder):
     def compress(file):
         with tar.open(output_folder + file + '.tar.xz', 'w:xz') as app_data_tar:
             app_data_tar.add(home + dir_to_compress + file, arcname=file)
@@ -26,10 +25,9 @@ def compress_save_data(apps, dir_to_compress, output_folder):
         app_data_dirs = os.listdir(home + dir_to_compress)
 
         for app in app_data_dirs:
-            with tar.open(home + dir_to_compress + '.tar.xz', 'w:xz') as app_data_tar:
-                compress(app)
+            compress(app)
 
     else:
         for app in apps:
-            with tar.open(home + dir_to_compress + '.tar.xz', 'w:xz') as app_data_tar:
-                compress(app)
+            compress(app)
+

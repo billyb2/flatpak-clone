@@ -14,6 +14,9 @@ def compress_data(apps, dir_to_compress, output_folder):
     if output_folder[-1] != '/':
         output_folder += '/'
 
+    print(dir_to_compress)
+    print(output_folder)
+
     def compress(file):
         with tar.open(output_folder + file + '.tar.xz', 'w:xz') as app_data_tar:
             app_data_tar.add(home + dir_to_compress + file, arcname=file)
@@ -38,22 +41,28 @@ def clone(apps, output_dir, data):
 
     # Compresses save data
     if data:
+        print("Compressing app data (this could take a while, grab a cup of coffee)")
         compress_data(apps, '/.var/app/', output_dir)
 
     # Finds apps and version numbers
-    with open(output_dir + 'apps', 'w') as f:
+    with open(output_dir + 'apps.fpbck', 'w') as f:
         for app in apps_dir[:-1]:
+            print("Writing " + app + " name")
             f.write(app + "\n")
+        print("Finished writing")
 
     with tar.open(output_dir + 'flatpak_backup.tar.xz', 'w:xz') as flatpak_tar:
         for i in os.listdir(output_dir):
-            flatpak_tar.add(output_dir + i, arcname=i)
+            if i + ".tar.xz" in apps_dir or i == 'apps.fpbck':
+                print("Adding " + i + " to tar")
+                flatpak_tar.add(output_dir + i, arcname=i)
 
         flatpak_tar.close()
 
     for i in os.listdir(output_dir):
         if i != 'flatpak_backup.tar.xz':
-            if os.path.isfile(output_dir + i):
-                os.remove(output_dir + i)
-            else:
-                shutil.rmtree(output_dir + i)
+            if i == 'apps.fpbck' or i + ".tar.xz" in apps_dir:
+                if os.path.isfile(output_dir + i):
+                    os.remove(output_dir + i)
+                else:
+                    shutil.rmtree(output_dir + i)

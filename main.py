@@ -1,13 +1,15 @@
 #!/bin/python3
-
 import sys
-from clone import clone
+from src import clone
+from pathlib import Path
 
 helping = [False, None]
 cloning = [False, None]
 data = False
+output = [False, None]
 
 args = sys.argv[1:]
+home = str(Path.home())
 
 
 def help_banner(reason):
@@ -41,6 +43,8 @@ def help_banner(reason):
 def set_args():
     global cloning
     global helping
+    global data
+    global output
 
     for arg in args:
         if arg == 'clone':
@@ -51,6 +55,12 @@ def set_args():
 
         elif arg == '-d' or arg == '--data':
             data = True
+
+        if arg == '-o' or arg == '--output':
+            output = [True, args.index(arg)]
+
+        else:
+            output = [True, home]
 
 
 def main():
@@ -63,6 +73,12 @@ def main():
     if helping[1] is not None:
         if cloning[1] is not None:
             if helping[1] >= cloning[1]:
+                help_banner('inv_arg')
+                return
+
+    if output[1] is not None:
+        if cloning[1] is not None:
+            if output[1] >= cloning[1]:
                 help_banner('inv_arg')
                 return
 
@@ -82,18 +98,20 @@ def main():
         print("Compressing app data (this could take a while)...")
         if args[cloning[1] + 1] == 'all':
             try:
-                clone.clone('all', args[cloning[1] + 2], data)
+                print(args[output[0]])
+                clone.clone('all', args[output[0]], data)
 
             except IndexError:
-                print("No output folder specified, using " + clone.home)
-                clone.clone('all', clone.home + "/", data)
+                print("No output folder specified, using " + home)
+                clone.clone('all', home, data)
 
         else:
             apps = []
             for arg in args[cloning[1] + 1:]:
                 apps.append(arg)
 
-            clone.clone
+            print(apps)
+            clone.clone(apps, home, data)
 
         print("Cloned!")
 

@@ -59,9 +59,6 @@ def set_args():
         if arg == '-o' or arg == '--output':
             output = [True, args.index(arg)]
 
-        else:
-            output = [True, home]
-
 
 def main():
     set_args()
@@ -78,7 +75,7 @@ def main():
 
     if output[1] is not None:
         if cloning[1] is not None:
-            if output[1] >= cloning[1]:
+            if int(output[1]) >= cloning[1]:
                 help_banner('inv_arg')
                 return
 
@@ -98,8 +95,11 @@ def main():
         print("Compressing app data (this could take a while)...")
         if args[cloning[1] + 1] == 'all':
             try:
-                print(args[output[0]])
-                clone.clone('all', args[output[0]], data)
+                if output[0]:
+                    clone.clone('all', args[output[1] + 1], data)
+
+                else:
+                    clone.clone('all', home, data)
 
             except IndexError:
                 print("No output folder specified, using " + home)
